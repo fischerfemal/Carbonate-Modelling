@@ -658,20 +658,17 @@ bayes_model <- function() {
   
 }
 
-dinterval
-I 
-
 
 
 # Model Fitting
 
 bayes_fit <- jags(model.file = bayes_model, parameters.to.save = parameters, data = carbonate_data, inits = inits, 
-                  n.chains=3, n.iter = 200000, n.burnin = 10000, n.thin = 1000, n.adapt = 1000
+                  n.chains=4, n.iter = 10000000, n.burnin = 10000, n.thin = 10000
 )
 
 # update if there is little convergence
 
-bayes_fit_upd <- autojags(bayes_fit)
+bayes_fit_upd <- autojags(bayes_fit, n.iter=10000000, n.thin=10000, n.update = 10)
 
 print(bayes_fit_upd)
 
