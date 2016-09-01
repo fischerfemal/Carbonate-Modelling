@@ -605,7 +605,7 @@ bayes_model <- function() {
   deltaA_PETM <- deltaA_Bkg - 4.6
   
   pCO2_Bkg ~ dunif(300, 1000)
-  deltaA_Bkg ~ dunif(-4.5, -5.5)
+  deltaA_Bkg ~ dunif(-5.5, -4.5)
   
   MAP_Bkg_BB ~ dunif(200, 3000)
   MAP_Bkg_AC ~ dunif(200, 3000)
@@ -655,7 +655,6 @@ bayes_model <- function() {
   ST_PETM_ES ~ dunif(0, 1)
   ST_PETM_CN ~ dunif(0, 1)
   
-  
 }
 
 
@@ -663,16 +662,34 @@ bayes_model <- function() {
 # Model Fitting
 
 bayes_fit <- jags(model.file = bayes_model, parameters.to.save = parameters, data = carbonate_data, inits = inits, 
-                  n.chains=4, n.iter = 10000000, n.burnin = 10000, n.thin = 10000
+                  n.chains=4, n.iter = 10000000, n.burnin = 100000, n.thin = 10000
 )
 
 # update if there is little convergence
 
-bayes_fit_upd <- autojags(bayes_fit, n.iter=10000000, n.thin=10000, n.update = 10)
+bayes_fit_upd <- autojags(bayes_fit, n.iter=1000000, n.thin=10000, n.update = 3)
 
+
+print(bayes_fit)
 print(bayes_fit_upd)
 
-bayes_fit_mcmc <- as.mcmc(bayes_fit_upd)
+bayes_fit_mcmc <- as.mcmc(bayes_fit)
+
+bayes_fit_mcmc_upd <- as.mcmc(bayes_fit_upd)
+
+denplot(bayes_fit_mcmc_upd, "T_seas_Bkg_BB")
+denplot(bayes_fit_mcmc_upd, "T_seas_PETM_BB")
+denplot(bayes_fit_mcmc_upd, "MAP_Bkg_BB")
+denplot(bayes_fit_mcmc_upd, "MAP_PETM_BB")
+denplot(bayes_fit_mcmc_upd, "ST_Bkg_BB")
+denplot(bayes_fit_mcmc_upd, "MAT_Bkg_BB")
+denplot(bayes_fit_mcmc_upd, "pCO2_Bkg")
+denplot(bayes_fit_mcmc_upd, "pCO2_PETM")
+denplot(bayes_fit_mcmc_upd, "Sens")
+denplot(bayes_fit_mcmc_upd, "MAT_Bkg_CN")
+denplot(bayes_fit_mcmc_upd, "MAP_PETM_ES")
 
 denplot(bayes_fit_mcmc, "T_seas_Bkg_BB")
+denplot(bayes_fit_mcmc, "T_seas_PETM_BB")
+denplot(bayes_fit_mcmc, "MAP_Bkg_BB")
 
